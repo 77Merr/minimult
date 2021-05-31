@@ -75,7 +75,7 @@ class TextDataset(Dataset):
     def __init__(self, tokenizer: PreTrainedTokenizer, args, file_path: str, block_size=512):
         assert os.path.isfile(file_path)
 
-        block_size = block_size - (tokenizer.max_len - tokenizer.max_len_single_sentence)
+        block_size = block_size - (tokenizer.max_len - tokenizer.max_len_single_sentence)  #？？？？？
 
         directory, filename = os.path.split(file_path)
         cached_features_file = os.path.join(
@@ -344,11 +344,12 @@ def train(args, train_dataset, model: PreTrainedModel, tokenizer: PreTrainedToke
     model.zero_grad()
     train_iterator = trange(
         epochs_trained, int(args.num_train_epochs), desc="Epoch", disable=args.local_rank not in [-1, 0]
-    )
+    )    #trange is similar to tqdm
     set_seed(args)  # Added here for reproducibility
     mycounter = 0
     for _ in train_iterator:
-        epoch_iterator = tqdm(train_dataloader, desc="Iteration", disable=args.local_rank not in [-1, 0])
+        epoch_iterator = tqdm(train_dataloader, desc="Iteration", disable=args.local_rank not in [-1, 0])  
+        #tqdm在阿拉伯语中的意思是“进展”，是一个快速、扩展性强的进度条工具库。Instantly make your loops show a smart progress meter - just wrap any iterable with tqdm(iterable), and you’re done!
         for step, batch in enumerate(epoch_iterator):
             if args.adjust_replacement_probs_with_time > 0:
                 if args.replacement_probs[1] - args.adjust_replacement_probs_with_time >= 0.0:
@@ -506,10 +507,10 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, prefi
         if mycounter == 0 or mycounter == 68:
             pass
         if args.invert_order:
-            invert(batch, model.config.shift)
+            invert(batch, model.config.shift)   #？？？invert函数吗
         if args.language_specific_positions:
             if args.block_size > 256:
-                raise ValueError("Language specific posiiton embeddings can only be <256.")
+                raise ValueError("Language specific position embeddings can only be <256.")
             position_ids, segment_ids = get_language_specific_positions(batch, model.config.shift, args.block_size)
             position_ids = position_ids.to(args.device)
             segment_ids = segment_ids.to(args.device)
@@ -564,6 +565,7 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, prefi
 
 def main():
     parser = argparse.ArgumentParser()
+    #argparse - 命令行解析库.使用add_argument()方法为解析器填充可选参数和位置参数的动作。然后调用parse_args()方法将命令行中的参数转换为具有属性的对象。
 
     # Required parameters
     parser.add_argument(
@@ -593,7 +595,8 @@ def main():
     )
     parser.add_argument(
         "--should_continue", action="store_true", help="Whether to continue from latest checkpoint in output_dir"
-    )
+    )#store_true就代表着一旦有这个参数，做出动作“将其值标为True”，也就是没有时，默认状态下其值为False。反之亦然，store_false也就是默认为True，一旦命令中有此参数，其值则变为False。
+    
     parser.add_argument(
         "--model_name_or_path",
         default=None,
@@ -724,6 +727,8 @@ def main():
     parser.add_argument("--eval_output_file", default=None, type=str, help="Output file for evaluation.")
 
     args = parser.parse_args()
+    #解析参数。它将检查命令行，把每个参数转换为适当的类型然后调用相应的操作。在大多数情况下，这意味着一个简单的 Namespace 对象将从命令行解析出的属性构建
+    #在脚本中，通常 parse_args() 会被不带参数调用，而 ArgumentParser 将自动从 sys.argv 中确定命令行参数。
     args.replacement_probs = [float(x) for x in args.replacement_probs.split(",")]
 
     if args.model_type in ["bert", "roberta", "distilbert", "camembert"] and not args.mlm:
