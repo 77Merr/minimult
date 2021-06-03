@@ -83,7 +83,7 @@ class TextDataset(Dataset):
         )
 
         if os.path.exists(cached_features_file) and not args.overwrite_cache:
-            logger.info("Loading features from cached file %s", cached_features_file)
+            logger.info("Loading features from cached file %s", cached_features_file)   #%s - String (or any object with a string representation, like numbers)
             with open(cached_features_file, "rb") as handle:
                 self.examples = pickle.load(handle)
         else:
