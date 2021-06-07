@@ -507,7 +507,7 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, prefi
         if mycounter == 0 or mycounter == 68:
             pass
         if args.invert_order:
-            invert(batch, model.config.shift)   #？？？invert函数吗
+            invert(batch, model.config.shift) 
         if args.language_specific_positions:
             if args.block_size > 256:
                 raise ValueError("Language specific position embeddings can only be <256.")
