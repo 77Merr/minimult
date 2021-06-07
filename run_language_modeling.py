@@ -851,7 +851,7 @@ def main():
             from_tf=bool(".ckpt" in args.model_name_or_path),
             config=config,
             cache_dir=args.cache_dir,
-        )
+        )#那些支持语言训练任务头的模型
     else:
         logger.info("Training new model from scratch")
         model = AutoModelWithLMHead.from_config(config)
@@ -894,7 +894,7 @@ def main():
         # They can then be reloaded using `from_pretrained()`
         model_to_save = (
             model.module if hasattr(model, "module") else model
-        )  # Take care of distributed/parallel training
+        )  # Take care of distributed/parallel training   #hasattr() 函数用于判断对象是否包含对应的属性
         model_to_save.save_pretrained(args.output_dir)
         tokenizer.save_pretrained(args.output_dir)
 
